@@ -25,14 +25,14 @@ COOKIES_PATH = os.getenv("COOKIES_PATH")
 # путь к файлу с логами
 LOG_FILE_PATH = os.getenv("LOG_FILE_PATH")
 
-# заголовки запроса
-HEADERS = {
-    "accept": os.getenv("HEADERS_ACCEPT"),
-    "user_agent": os.getenv("HEADERS_USER_AGENT"),
-}
-
 # прокси
 PROXIES = {
     "http": os.getenv("PROXIES_HTTP"),
     "https": os.getenv("PROXIES_HTTPS"),
+}
+
+# заголовки запроса
+HEADERS = {
+    "accept": os.getenv("HEADERS_ACCEPT"),
+    "user_agent": os.getenv("HEADERS_USER_AGENT"),
 }
