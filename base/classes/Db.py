@@ -16,10 +16,14 @@ class Db:
         self.__connection = sqlite3.connect(self.__db_name)
 
     def execute(self, query: str):
+        """Запрос к БД.
+
+        :param query: текст запроса.
+        """
         self.__connection.cursor().execute(query)
 
     def query(self, query: str) -> list:
-        """Запрос к БД с использованием fetchall.
+        """Запрос к БД с получением результата этого запроса (через fetchall).
 
         :param query: текст запроса.
 

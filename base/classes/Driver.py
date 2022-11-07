@@ -22,9 +22,9 @@ class Driver:
         self.__driver.quit()
 
     def __initialize_driver(self) -> webdriver:
-        """Инициализировать драйвер с опциями.
+        """Инициализировать драйвер с готовыми настройками.
 
-        :return: драйвер с опциями.
+        :return: драйвер с готовыми настройками.
         """
         options = webdriver.ChromeOptions()
 
