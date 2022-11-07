@@ -24,7 +24,6 @@ docker-compose.yml
 data.json
 errors.log
 *.db
-*.txt
 *.doc
 *.log
 
