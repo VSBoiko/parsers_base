@@ -50,7 +50,7 @@ class Parser:
         try:
             if self.is_sending_orders and settings.PRODUCTION:
                 from Send_report.Utils import send_to_api
-                settings.send_to_api(data)
+                send_to_api(data)
             return True
         except Exception as err:
             logging.error(f"Ошибка при отправке заказа по API - {err}")
