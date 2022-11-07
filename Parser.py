@@ -345,25 +345,30 @@ class Parser(BaseParser):
         if len(contact_name) == 1:
             contact_name.append("")
 
-        if contact_name[0]:
-            if "contactPerson" not in result:
-                result.update({"contactPerson": {}})
-            result["contactPerson"].update({"lastName": contact_name[0]})
-
-        if contact_name[1]:
-            if "contactPerson" not in result:
-                result.update({"contactPerson": {}})
-            result["contactPerson"].update({"firstName": contact_name[1]})
-
+        added_email = False
         if order_detail.get("contactEmail"):
             if "contactPerson" not in result:
                 result.update({"contactPerson": {}})
             result["contactPerson"].update({"contactEMail": order_detail.get("contactEmail")})
+            added_email = True
 
+        added_phone = False
         if order_detail.get("contactPhone"):
             if "contactPerson" not in result:
                 result.update({"contactPerson": {}})
             result["contactPerson"].update({"contactPhone": order_detail.get("contactPhone")})
+            added_phone = True
+
+        if added_email or added_phone:
+            if contact_name[0]:
+                if "contactPerson" not in result:
+                    result.update({"contactPerson": {}})
+                result["contactPerson"].update({"lastName": contact_name[0]})
+
+            if contact_name[1]:
+                if "contactPerson" not in result:
+                    result.update({"contactPerson": {}})
+                result["contactPerson"].update({"firstName": contact_name[1]})
 
         okpd_codes = [{"code": item.get("okpd").get("code")} for item in order_detail.get("items")]
         if okpd_codes:
@@ -564,27 +569,32 @@ class Parser(BaseParser):
             if not customer:
                 logging.error(f"{iter_info} По заказу {order.get('order_id')} в БД "
                               f"нет информации о заказчике {order.get('customer_id')}")
+                count_send_error += 1
                 continue
 
             try:
                 formatted_order = self.__get_formatted_order(order_type, order, customer)
             except Exception as err:
                 logging.error(f"{iter_info} Ошибка при формировании заказа для отправки по API: {err}")
+                count_send_error += 1
                 continue
 
-            if formatted_order:
-                if self._send_order([formatted_order]):
-                    if self.is_updating_order:
-                        db.successful_send(order.get("order_id"))
-                    logging.info(f"{iter_info} Заказ успешно отправлен по API: {order.get('url')}")
-                    sent_orders.append(formatted_order)
-                    count_send += 1
-                else:
-                    logging.info(f"{iter_info} Заказ не отправлен по API: {order.get('url')}")
-                    count_send_error += 1
-            else:
+            if not formatted_order:
                 logging.info(f"{iter_info} Заказ пустой: {order.get('url')}")
                 count_send_error += 1
+                continue
+
+            if not self._send_order([formatted_order]):
+                logging.info(f"{iter_info} Заказ не отправлен по API: {order.get('url')}")
+                count_send_error += 1
+                continue
+
+            sent_orders.append(formatted_order)
+
+            if self.is_updating_order:
+                db.successful_send(order.get("order_id"))
+            logging.info(f"{iter_info} Заказ успешно отправлен по API: {order.get('url')}")
+            count_send += 1
 
         self.file_manager.write_json_file("last_result.json", sent_orders)
 
