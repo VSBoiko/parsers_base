@@ -174,18 +174,24 @@ class Parser(BaseParser):
         count_all_item = orders["count"]
         count = 0
         logging.info("Начало добавления заказов в БД")
+        db_orders = db.get_all_orders()
+        db_customers = db.get_all_customers()
         for order in orders["items"]:
             count += 1
+            order_type = self.__get_order_type(order)
+            order_id = self.__get_order_id(order_type, order)
+            if order_id in db_orders:
+                continue
+
             logging.info(f"#{count} / {count_all_item}: Заказ ({order.get('number')}) {order.get('name')}")
 
             if not self.__check_order(order):
                 continue
 
             customer = order.get('customers')[0]
-            self.__add_customer_to_db(customer, db)
+            if customer.get("id") not in db_customers:
+                self.__add_customer_to_db(customer, db)
 
-            order_type = self.__get_order_type(order)
-            order_id = self.__get_order_id(order_type, order)
             self.__add_order_to_db(db, order_type, order_id, order, customer.get("id"))
         logging.info("Конец добавления заказов в БД")
 
