@@ -138,7 +138,7 @@ class Parser(BaseParser):
         """
         customer_id = customer.get('id')
         if db.get_customer_by_id(customer_id):
-            logging.info(f"Заказчик уже существует в БД - ({customer_id})")
+            logging.debug(f"Заказчик уже существует в БД - ({customer_id})")
             return False
 
         api_url = self.__get_customer_api_url(customer_id)
@@ -159,10 +159,10 @@ class Parser(BaseParser):
             customer_data=json.dumps(customer_data, ensure_ascii=False),
         )
         if not success:
-            logging.info(f"Заказчик {customer_id} не добавлен в БД")
+            logging.debug(f"Заказчик {customer_id} не добавлен в БД")
             return False
 
-        logging.info(f"Заказчик {customer_id} успешно добавлен в БД")
+        logging.debug(f"Заказчик {customer_id} успешно добавлен в БД")
         return True
 
     def __add_orders_to_db(self, orders: dict, db: Db):
@@ -183,7 +183,7 @@ class Parser(BaseParser):
             if order_id in db_orders:
                 continue
 
-            logging.info(f"#{count} / {count_all_item}: Заказ ({order.get('number')}) {order.get('name')}")
+            logging.debug(f"#{count} / {count_all_item}: Заказ ({order.get('number')}) {order.get('name')}")
 
             if not self.__check_order(order):
                 continue
@@ -209,7 +209,7 @@ class Parser(BaseParser):
         """
         db_order = db.get_order_by_order_id(order_id)
         if db_order:
-            logging.info(f"Заказ уже существует в БД - ({order_id})")
+            logging.debug(f"Заказ уже существует в БД - ({order_id})")
             return False
 
         order_api_url = self.__get_order_api_url(order_type, order_id)
@@ -246,10 +246,10 @@ class Parser(BaseParser):
             customer_id=customer_id,
         )
         if not success:
-            logging.info(f"Заказ {order_url} не добавлен в БД")
+            logging.debug(f"Заказ {order_url} не добавлен в БД")
             return False
 
-        logging.info(f"Заказ {order_id} успешно добавлен в БД")
+        logging.debug(f"Заказ {order_id} успешно добавлен в БД")
         return True
 
     def __check_order(self, order) -> bool:
@@ -586,12 +586,12 @@ class Parser(BaseParser):
                 continue
 
             if not formatted_order:
-                logging.info(f"{iter_info} Заказ пустой: {order.get('url')}")
+                logging.debug(f"{iter_info} Заказ пустой: {order.get('url')}")
                 count_send_error += 1
                 continue
 
             if not self._send_order([formatted_order]):
-                logging.info(f"{iter_info} Заказ не отправлен по API: {order.get('url')}")
+                logging.debug(f"{iter_info} Заказ не отправлен по API: {order.get('url')}")
                 count_send_error += 1
                 continue
 
@@ -599,7 +599,7 @@ class Parser(BaseParser):
 
             if self.is_updating_order:
                 db.successful_send(order.get("order_id"))
-            logging.info(f"{iter_info} Заказ успешно отправлен по API: {order.get('url')}")
+            logging.debug(f"{iter_info} Заказ успешно отправлен по API: {order.get('url')}")
             count_send += 1
 
         self.file_manager.write_json_file("last_result.json", sent_orders)
