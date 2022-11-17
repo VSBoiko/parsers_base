@@ -158,7 +158,7 @@ class Db(BaseDb):
 
         :return: словарь с данными о заказчике.
         """
-        query = f"SELECT * FROM customers WHERE customer_id={customer_id}"
+        query = f"SELECT * FROM customers WHERE customer_id='{customer_id}'"
         rows = self.query(query)
         customers = [self.formatted_customer(row) for row in rows]
         if customers:

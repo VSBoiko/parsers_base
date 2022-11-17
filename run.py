@@ -7,7 +7,7 @@ if __name__ == "__main__":
         is_sleeping=False,
         is_sending_orders=False,
         is_updating_order=False,
-        is_parsing_site=True,
+        is_parsing_site=False,
     )
 
     parser.run()

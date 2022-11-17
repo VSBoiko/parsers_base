@@ -183,7 +183,7 @@ class Parser(BaseParser):
                 else:
                     count_empty = 0
 
-                if count_empty == 100:
+                if count_empty == 20:
                     break
 
         result = self.__send_orders_from_db(self.db)
@@ -239,7 +239,6 @@ class Parser(BaseParser):
             logging.debug(f"#{count} / {count_all_item}: Заказ {order_id}")
 
             if not self.__check_order(order):
-                logging.debug(f"Заказ {order_id} не может быть добавлен в БД")
                 count_errors += 1
                 continue
 
@@ -263,7 +262,7 @@ class Parser(BaseParser):
         logging.info(f"Конец добавления заказов в БД. "
                      f"Обработано {count_all_item} заказов. "
                      f"Добавлено {count_add} заказов. "
-                     f"С ошибкой {count_errors} заказов.")
+                     f"Пропущено {count_errors} заказов.")
 
         return count_all_item, count_add, count_errors
 
