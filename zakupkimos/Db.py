@@ -192,7 +192,7 @@ class Db(BaseDb):
 
         :param order_id: ID заказа.
 
-        :return: флаг успешно / не успешно прошло обновление записи.
+        :return: флаг успешно / неуспешно прошло обновление записи.
         """
         query = "UPDATE orders SET was_send=1, order_data=NULL, order_detail=NULL WHERE order_id=?"
         return self.insert(query, [(order_id,)])
