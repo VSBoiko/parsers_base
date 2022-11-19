@@ -1,13 +1,14 @@
 import random
 from time import sleep
 
-
 from base.logger import logging
 
 import settings
 
 
 class Parser:
+    """Базовый класс для парсера."""
+
     def __init__(self,
                  parser_name: str,
                  is_sleeping: bool = True,
@@ -28,10 +29,20 @@ class Parser:
         self.is_updating_order = is_updating_order
         self.is_parsing_site = is_parsing_site
 
-    def _get_parser_name(self):
+    def _get_parser_name(self) -> str:
+        """Получить название парсера.
+
+        :return: название парсера.
+        """
         return self.parser_name
 
     def _send_order(self, order: list) -> bool:
+        """Отправить заказы на сервер по API.
+
+        :param order: заказ.
+
+        :return: флаг успешно / не успешно прошла отправка.
+        """
         data = {
             "name": self._get_parser_name(),
             "data": order,
@@ -39,12 +50,17 @@ class Parser:
         try:
             if self.is_sending_orders and settings.PRODUCTION:
                 from Send_report.Utils import send_to_api
-                settings.send_to_api(data)
+                send_to_api(data)
             return True
         except Exception as err:
             logging.error(f"Ошибка при отправке заказа по API - {err}")
             return False
 
     def _to_sleep(self, start: int = 2, stop: int = 4):
+        """Остановить скрипт на случайное кол-во секунд из диапазона.
+
+        :param start: начало диапазона;
+        :param stop: конец диапазона.
+        """
         if self.is_sleeping:
             sleep(random.randrange(start, stop))
